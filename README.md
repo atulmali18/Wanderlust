@@ -19,7 +19,7 @@ A full-stack application for listing, reviewing, and booking travel destinations
 ### 1. **Clone the repository**
 
 ```sh
-git clone https://github.com/your-username/wanderlust.git
+git clone https://github.com/atulmali18/wanderlust.git
 cd wanderlust
 ```
 
