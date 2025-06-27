@@ -1,0 +1,44 @@
+<% layout("/layouts/boilerplate.ejs") %>
+<body>
+    <div>
+        <h1>All listings</h1>
+        
+        <!-- Flash Messages -->
+        <% if(locals.success) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <%= success %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+        
+        <% if(locals.error) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <%= error %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
+        <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
+            <% for(let listing of allListings) { %>
+                <a href="/listings/<%= listing._id %>" class="listing-link">
+                    <div class="card col listing-card">
+                        <img src="<%- listing.image %>" 
+                             class="card-img-top" 
+                             style="height: 20rem;" 
+                             alt="<%= listing.title %>"
+                             onerror="console.log('Image failed to load:', this.src); this.onerror=null; this.src='https://images.unsplash.com/photo-1625505826533-5c80aca7d157?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGdvYXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60';">
+                        <div class="card-img-overlay"></div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                <b><%= listing.title %></b> <br>
+                                By: <%= listing.owner ? listing.owner.username : 'Anonymous' %> | 
+                                Created: <%= new Date(listing.createdAt).toLocaleDateString() %> <br>
+                                &#8377 <%= listing.price ? listing.price.toLocaleString("en-IN") : "Price not set" %> /night
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            <% } %>
+        </div>
+    </div>
+</body>

@@ -1,0 +1,47 @@
+<% layout("/layouts/boilerplate.ejs") %>
+
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-4">My Listings</h1>
+            <p class="lead">You have created <%= listings.length %> listings</p>
+            <% if(currUser) { %>
+                <p class="text-muted">User ID: <%= currUser._id %></p>
+            <% } %>
+        </div>
+    </div>
+
+    <div class="row">
+        <% if(listings && listings.length > 0) { %>
+            <% listings.forEach((listing) => { %>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= listing.title %></h5>
+                            <p class="card-text">
+                                <small class="text-muted">Created: <%= listing.createdAt.toLocaleDateString() %></small>
+                            </p>
+                            <p class="card-text"><%= listing.description.substring(0, 100) %>...</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a href="/listings/<%= listing._id %>" class="btn btn-sm btn-outline-primary">View</a>
+                                    <a href="/listings/<%= listing._id %>/edit" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST" class="d-inline">
+                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <div class="col">
+                <div class="alert alert-info">
+                    You haven't created any listings yet. 
+                    <a href="/listings/new" class="alert-link">Create your first listing</a>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>

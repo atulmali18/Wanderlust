@@ -1,0 +1,77 @@
+<style>
+  .btn-search{
+    background-color: #fe4214;
+    color: #fff;
+    border-radius: 20px;
+    padding: 0 1rem 0 1rem;
+  }
+  .btn-search:hover{
+    background-color: #fe4214;
+    color: #fff;
+  }
+  .btn-search i{
+    display: inline;
+    margin-right: 0.3rem;
+  }
+  .btn-input{
+    border-radius: 20px;
+    padding: 0.5rem 3.5rem 0.5rem 3.5rem;
+    font-size: 0.9rem;
+  }
+  .navbar-brand i {
+    font-size: 1.5rem;
+  }
+  .profile-icon {
+    font-size: 1.2rem;
+    margin-right: 0.5rem;
+  }
+  .dropdown-menu {
+    min-width: 200px;
+  }
+</style>
+<nav class="navbar navbar-expand-md bg-body-light sticky-top border-bottom">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/"><i class="fa-regular fa-compass"></i> WanderLust</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-link" href="/listings">Explore</a>
+            </div>
+
+            <form class="d-flex navbar-nav mx-auto" role="search" action="/listings/search" method="GET">
+                <input class="form-control me-2 btn-input" type="search" name="q" placeholder="Search destinations" aria-label="Search">
+                <button class="btn btn-search" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
+            </form>
+            
+            <div class="navbar-nav">
+                <% if(!currUser){ %>
+                    <a class="nav-link" href="/user/signup"><b>Sign Up</b></a>
+                    <a class="nav-link" href="/user/login"><b>Log in</b></a>
+                <% } else { %>
+                    <a class="nav-link" href="/listings/new">List your Home</a>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-circle-user profile-icon"></i>
+                            <%= currUser.username %>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/user/profile"><i class="fa-solid fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="/listings/my-listings"><i class="fa-solid fa-list me-2"></i>My Listings</a></li>
+                            <li><a class="dropdown-item" href="/user/bookings"><i class="fa-solid fa-calendar me-2"></i>My Bookings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form action="/user/logout" method="POST" class="d-inline">
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</nav>
