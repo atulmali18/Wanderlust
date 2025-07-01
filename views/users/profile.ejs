@@ -1,0 +1,16 @@
+<% layout("/layouts/boilerplate.ejs") %>
+<div class="container mt-5 d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="card shadow-lg" style="max-width: 400px; width: 100%;">
+        <div class="card-body text-center">
+            <div class="mb-3 mt-3">
+                <i class="fa-solid fa-circle-user fa-4x text-secondary"></i>
+            </div>
+            <h3 class="card-title mb-2"><%= user.username %></h3>
+            <p class="card-text mb-4"><i class="fa-solid fa-envelope me-2"></i><strong>Email:</strong> <%= user.email %></p>
+            <!-- Add more user info as needed -->
+            <a href="/user/logout" class="btn btn-danger w-50 mt-3 mb-3">
+                <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
+            </a>
+        </div>
+    </div>
+</div>

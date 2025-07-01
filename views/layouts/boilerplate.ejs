@@ -16,19 +16,21 @@
 <body>
     <%- include("../includes/navbar.ejs") %>
     
-    <!-- Flash Messages -->
-    <% if(success && success.length) { %>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <%= success %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    <% } %>
-    <% if(error && error.length) { %>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <%= error %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    <% } %>
+    <!-- Flash Messages (Bootstrap Alerts, top right) -->
+    <div style="position: fixed; top: 2rem; right: 2rem; z-index: 1055; min-width: 300px;">
+        <% if(success) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert" id="flash-success">
+                <%= success %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+        <% if(error) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" id="flash-error">
+                <%= error %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+    </div>
 
     <div class="container">
         <%- body %>
@@ -38,26 +40,20 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    
     <script>
-        // Configure toastr
-        toastr.options = {
-            "closeButton": true,
-            "progressBar": true,
-            "positionClass": "toast-top-right",
-            "timeOut": "3000"
-        };
-
-        // Show success message
-        <% if(success && success.length) { %>
-            toastr.success('<%= success %>');
-        <% } %>
-
-        // Show error message
-        <% if(error && error.length) { %>
-            toastr.error('<%= error %>');
-        <% } %>
+        setTimeout(function() {
+            var successAlert = document.getElementById('flash-success');
+            if(successAlert) {
+                var alert = bootstrap.Alert.getOrCreateInstance(successAlert);
+                alert.close();
+            }
+            var errorAlert = document.getElementById('flash-error');
+            if(errorAlert) {
+                var alert = bootstrap.Alert.getOrCreateInstance(errorAlert);
+                alert.close();
+            }
+        }, 2000);
     </script>
+    
 </body>
 </html>

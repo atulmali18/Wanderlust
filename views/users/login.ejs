@@ -1,14 +1,14 @@
 <% layout("/layouts/boilerplate.ejs") %>
 
 <div class="row">
-    <div class="col-6 offset-3">
+    <div class="col-6 offset-3 mt-5">
         <h1 class="mb-4">Login</h1>
         <form action="/user/login" method="POST" class="needs-validation" novalidate>
             <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" name="username" required>
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
                 <div class="invalid-feedback">
-                    Please provide your username.
+                    Please provide your email.
                 </div>
             </div>
             <div class="mb-3">

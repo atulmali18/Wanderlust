@@ -24,12 +24,12 @@ const authenticateToken = (req, res, next) => {
 
 // Show signup form
 router.get("/signup", (req, res) => {
-  res.render("users/signup.ejs", { currUser: req.session.user });
+  res.render("users/signup.ejs", { currUser: res.locals.currUser });
 });
 
 // Show login form
 router.get("/login", (req, res) => {
-  res.render("users/login.ejs", { currUser: req.session.user });
+  res.render("users/login.ejs", { currUser: res.locals.currUser });
 });
 
 // Base user route
@@ -41,47 +41,12 @@ router.get("/", (req, res) => {
 router.post("/signup", wrapAsync(userController.signup));
 
 // Login Route
-router.post("/login", wrapAsync(async (req, res) => {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    
-    if (!user) {
-        req.flash("error", "Invalid email or password");
-        return res.redirect("/user/login");
-    }
-
-    const isValidPassword = await user.comparePassword(password);
-    if (!isValidPassword) {
-        req.flash("error", "Invalid email or password");
-        return res.redirect("/user/login");
-    }
-
-    // Store complete user data in session
-    req.session.user = {
-        _id: user._id,
-        username: user.username,
-        email: user.email
-    };
-    
-    console.log("User logged in:", req.session.user);
-    req.flash("success", "Welcome back!");
-    res.redirect("/listings");
-}));
+router.post("/login", wrapAsync(userController.login));
 
 // Logout Route - Changed to GET
-router.get("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.error("Error destroying session:", err);
-      return res.redirect("/listings");
-    }
-    res.clearCookie("connect.sid");
-    req.flash("success", "You have been logged out successfully!");
-    res.redirect("/listings");
-  });
-});
+router.get("/logout", userController.logout);
 
 // Profile Route
-router.get("/profile", authenticateToken, wrapAsync(userController.renderProfile));
+router.get("/profile", wrapAsync(userController.renderProfile));
 
 module.exports = router;

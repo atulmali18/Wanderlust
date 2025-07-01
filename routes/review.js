@@ -10,8 +10,8 @@ const { reviewSchema } = require('../schema.js');
 
 // Middleware to check if user is logged in
 const isLoggedIn = (req, res, next) => {
-    if (!req.session.user) {
-        req.flash("error", "You must be logged in to leave a review");
+    if (!res.locals.currUser) {
+        res.cookie('error', 'You must be logged in to leave a review', { maxAge: 5000, httpOnly: false });
         return res.redirect("/user/login");
     }
     next();
@@ -21,8 +21,8 @@ const isLoggedIn = (req, res, next) => {
 const isReviewAuthor = async (req, res, next) => {
     const { id, reviewId } = req.params;
     const review = await Review.findById(reviewId);
-    if (!review.author.equals(req.session.user.id)) {
-        req.flash("error", "You don't have permission to delete this review");
+    if (!review.author.equals(res.locals.currUser.id)) {
+        res.cookie('error', "You don't have permission to delete this review", { maxAge: 5000, httpOnly: false });
         return res.redirect(`/listings/${id}`);
     }
     next();
@@ -44,7 +44,7 @@ route.post("/reviews", isLoggedIn, validateReview, wrapAsync(async(req, res, nex
     const newReview = new Review(req.body.review);
     
     // Set the author to the current user's ID
-    newReview.author = req.session.user.id;
+    newReview.author = res.locals.currUser.id;
     
     console.log("Debug - Creating Review:", {
         listingId: listing._id,
@@ -53,7 +53,7 @@ route.post("/reviews", isLoggedIn, validateReview, wrapAsync(async(req, res, nex
             rating: newReview.rating,
             author: newReview.author
         },
-        currentUser: req.session.user
+        currentUser: res.locals.currUser
     });
     
     listing.reviews.push(newReview);
@@ -61,7 +61,7 @@ route.post("/reviews", isLoggedIn, validateReview, wrapAsync(async(req, res, nex
     await newReview.save();
     await listing.save();
     
-    req.flash("success", "Review added successfully!");
+    res.cookie('success', 'Review added successfully!', { maxAge: 5000, httpOnly: false });
     res.redirect(`/listings/${listing.id}`);
 }));
 
@@ -70,7 +70,7 @@ route.delete("/reviews/:reviewId", isLoggedIn, isReviewAuthor, wrapAsync(async (
     const { id, reviewId } = req.params;
     await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
     await Review.findByIdAndDelete(reviewId);
-    req.flash("success", "Review deleted successfully!");
+    res.cookie('success', 'Review deleted successfully!', { maxAge: 5000, httpOnly: false });
     res.redirect(`/listings/${id}`);
 }));
 

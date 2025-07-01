@@ -12,7 +12,7 @@ module.exports.signup = async (req, res) => {
         // Check if user already exists
         const existingUser = await User.findOne({ $or: [{ email }, { username }] });
         if (existingUser) {
-            req.flash("error", "Username or email already exists");
+            res.cookie('error', 'Username or email already exists', { maxAge: 5000, httpOnly: false });
             return res.redirect("/user/signup");
         }
 
@@ -23,25 +23,17 @@ module.exports.signup = async (req, res) => {
         // Generate token
         const token = generateToken(user);
         
-        // Store user in session
-        req.session.user = {
-            id: user._id,
-            username: user.username,
-            token: token,
-            isAdmin: user.isAdmin
-        };
-
-        // Save session before redirect
-        req.session.save((err) => {
-            if (err) {
-                req.flash("error", "Error during signup");
-                return res.redirect("/user/signup");
-            }
-            req.flash("success", `Welcome to WanderLust, ${user.username}!`);
-            res.redirect("/listings");
+        // Set JWT cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000
         });
+        res.cookie('success', `Welcome to WanderLust, ${user.username}!`, { maxAge: 5000, httpOnly: false });
+        res.redirect("/listings");
     } catch (error) {
-        req.flash("error", error.message);
+        res.cookie('error', error.message, { maxAge: 5000, httpOnly: false });
         res.redirect("/user/signup");
     }
 };
@@ -52,62 +44,49 @@ module.exports.renderLoginForm = (req, res) => {
 
 module.exports.login = async (req, res) => {
     try {
-        const { username, password } = req.body;
-        const user = await User.findOne({ username });
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
 
         if (!user) {
-            req.flash("error", "Invalid username or password");
+            res.cookie('error', 'Invalid email or password', { maxAge: 5000, httpOnly: false });
             return res.redirect("/user/login");
         }
 
         const isValid = await user.authenticate(password);
         if (!isValid) {
-            req.flash("error", "Invalid username or password");
+            res.cookie('error', 'Invalid email or password', { maxAge: 5000, httpOnly: false });
             return res.redirect("/user/login");
         }
 
         const token = generateToken(user);
         
-        // Store user in session
-        req.session.user = {
-            id: user._id,
-            username: user.username,
-            token: token,
-            isAdmin: user.isAdmin
-        };
-
-        // Save session before redirect
-        req.session.save((err) => {
-            if (err) {
-                req.flash("error", "Error during login");
-                return res.redirect("/user/login");
-            }
-            req.flash("success", `Welcome back, ${user.username}!`);
-            res.redirect("/listings");
+        // Set JWT cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000
         });
+        res.cookie('success', `Welcome back, ${user.username}!`, { maxAge: 5000, httpOnly: false });
+        res.redirect("/listings");
     } catch (error) {
-        req.flash("error", "Login failed. Please try again.");
+        res.cookie('error', 'Login failed. Please try again.', { maxAge: 5000, httpOnly: false });
         res.redirect("/user/login");
     }
 };
 
 module.exports.logout = (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            req.flash("error", "Error logging out");
-            return res.redirect("/listings");
-        }
-        req.flash("success", "Successfully logged out!");
-        res.redirect("/listings");
-    });
+    res.clearCookie('token');
+    res.cookie('success', 'Successfully logged out!', { maxAge: 5000, httpOnly: false });
+    res.redirect("/listings");
 };
 
 module.exports.renderProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.session.user.id).select("-password");
+        const user = await User.findById(res.locals.currUser.id).select("-password");
         res.render("users/profile.ejs", { user });
     } catch (error) {
-        req.flash("error", "Error loading profile");
+        res.cookie('error', 'Error loading profile', { maxAge: 5000, httpOnly: false });
         res.redirect("/listings");
     }
 }; 
