@@ -82,4 +82,23 @@ exports.delete = async (req, res) => {
     await Listing.findByIdAndDelete(id);
     res.cookie('success', 'Listing deleted successfully!', { maxAge: 5000, httpOnly: false });
     res.redirect("/listings");
+};
+
+exports.search = async (req, res) => {
+    const { q } = req.query;
+    let results = [];
+    if (q && q.trim() !== "") {
+        // Search by title or location (case-insensitive)
+        results = await Listing.find({
+            $or: [
+                { title: { $regex: q, $options: "i" } },
+                { location: { $regex: q, $options: "i" } }
+            ]
+        }).populate("owner", "username");
+    }
+    res.render("listings/index.ejs", {
+        allListings: results,
+        currUser: res.locals.currUser,
+        searchQuery: q
+    });
 }; 

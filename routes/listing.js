@@ -28,6 +28,9 @@ router.get("/my-listings", isLoggedIn, wrapAsync(listingController.myListings));
 // New Route - Requires login
 router.get("/new", isLoggedIn, listingController.renderNewForm);
 
+// Search Route - Public access
+router.get("/search", wrapAsync(listingController.search));
+
 // Show Route - Public access
 router.get("/:id", wrapAsync(listingController.show));
 
